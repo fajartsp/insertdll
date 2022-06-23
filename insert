@@ -1,0 +1,285 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+    int data;
+    struct node * prev;
+    struct node * next;
+}*head, *last;
+
+//fungsi program
+void buatnode(int n);
+void tambahdepan(int data);
+void tambahbelakang(int data);
+void tambahtengah(int data, int position);
+void printnode();
+
+
+int main()
+{
+    int n, data, choice=1;
+
+    head = NULL;
+    last = NULL;
+
+    /*
+     * Run forever until user chooses 0
+     */
+    while(choice != 0)
+    {
+        /*
+         * Menu creation to use the program
+         */
+        printf("============================================\n");
+        printf("DOUBLY LINKED LIST PROGRAM\n");
+        printf("============================================\n");
+        printf("1. Buat Data Baru\n");
+        printf("2. Insert Data Depan\n");
+        printf("3. Insert Data Belakang\n");
+        printf("4. Insert Data Midle\n");
+        printf("5. Lihat Daftar\n");
+        printf("0. Exit\n");
+        printf("--------------------------------------------\n");
+        printf("Pilih Menu : ");
+
+        scanf("%d", &choice);
+
+        //Menu Operation
+        switch(choice)
+        {
+            case 1:
+                printf("Masukkan berapa total data yang akan ditambahkan: ");
+                scanf("%d", &n);
+
+                buatnode(n);
+                break;
+            case 2:
+                printf("Masukkan data pertama : ");
+                scanf("%d", &data);
+
+                tambahdepan(data);
+                break;
+            case 3:
+                printf("Masukkan data terakhir : ");
+                scanf("%d", &data);
+
+                tambahbelakang(data);
+                break;
+            case 4:
+                printf("Pilih posisi data yang akan ditambahkan: ");
+                scanf("%d", &n);
+                printf("Masukkan data %d : ", n);
+                scanf("%d", &data);
+
+                tambahtengah(data, n);
+                break;
+            case 5:
+                printnode();
+                break;
+            case 0:
+                break;
+            default:
+                printf("Error! Invalid choice. Please choose between 0-5");
+        }
+
+        printf("\n\n\n\n\n");
+    }
+
+    return 0;
+}
+
+
+/**
+ * Creates a doubly linked list of n nodes.
+ * @n Number of nodes to be created
+ */
+void buatnode(int n)
+{
+    int i, data;
+    struct node *newNode;
+
+    if(n >= 1)
+    {
+        /*
+         * Create and link the head node
+         */
+        head = (struct node *)malloc(sizeof(struct node));
+
+        printf("Enter data of 1 node: ");
+        scanf("%d", &data);
+
+        head->data = data;
+        head->prev = NULL;
+        head->next = NULL;
+
+        last = head;
+
+        /*
+         * Create and link rest of the n-1 nodes
+         */
+        for(i=2; i<=n; i++)
+        {
+            newNode = (struct node *)malloc(sizeof(struct node));
+
+            printf("Enter data of %d node: ", i);
+            scanf("%d", &data);
+
+            newNode->data = data;
+            newNode->prev = last; // Link new node with the previous node
+            newNode->next = NULL;
+
+            last->next = newNode; // Link previous node with the new node
+            last = newNode;          // Make new node as last/previous node
+        }
+
+        printf("\nDATA SUKSES DITAMBAHKAN\n");
+    }
+}
+
+
+/**
+ * Display content of the list from beginning to end
+ */
+void printnode()
+{
+    struct node * temp;
+    int n = 1;
+
+    if(head == NULL)
+    {
+        printf("Data Kosong.\n");
+    }
+    else
+    {
+        temp = head;
+        printf("Data ada di daftar:\n");
+
+        while(temp != NULL)
+        {
+            printf("DATA %d = %d\n", n, temp->data);
+
+            n++;
+
+            /* Move the current pointer to next node */
+            temp = temp->next;
+        }
+    }
+}
+
+
+/**
+ * Inserts a new node at the beginning of the doubly linked list
+ * @data Data of the first node i.e. data of the new node
+ */
+void tambahdepan(int data)
+{
+    struct node * newNode;
+
+    if(head == NULL)
+    {
+        printf("Ulangi, data kosong\n");
+    }
+    else
+    {
+        newNode = (struct node *)malloc(sizeof(struct node));
+
+        newNode->data = data;
+        newNode->next = head; // Point to next node which is currently head
+        newNode->prev = NULL; // Previous node of first node is NULL
+
+        /* Link previous address field of head with newnode */
+        head->prev = newNode;
+
+        /* Make the new node as head node */
+        head = newNode;
+
+        printf("Data sukses ditambahkan pada node awal\n");
+    }
+}
+
+
+/**
+ * Inserts a new node at the end of the doubly linked list
+ * @data Data of the last node i.e data of the new node
+ */
+void tambahbelakang(int data)
+{
+    struct node * newNode;
+
+    if(last == NULL)
+    {
+        printf("Ulangi, data kosong\n");
+    }
+    else
+    {
+        newNode = (struct node *)malloc(sizeof(struct node));
+
+        newNode->data = data;
+        newNode->next = NULL;
+        newNode->prev = last;
+
+        last->next = newNode;
+        last = newNode;
+
+        printf("Data sukses ditambahkan pada node akhir\n");
+    }
+}
+
+
+/**
+ * Inserts a node at any position in the doubly linked list
+ * @data Data of the new node to be inserted
+ * @position Position where to insert the new node
+ */
+void tambahtengah(int data, int position)
+{
+    int i;
+    struct node * newNode, *temp;
+
+    if(head == NULL)
+    {
+        printf("Ulangi, data kosong\n");
+    }
+    else
+    {
+        temp = head;
+        i=1;
+
+        while(i<position-1 && temp!=NULL)
+        {
+            temp = temp->next;
+            i++;
+        }
+
+        if(position == 1)
+        {
+            tambahdepan(data);
+        }
+        else if(temp == last)
+        {
+            tambahbelakang(data);
+        }
+        else if(temp!=NULL)
+        {
+            newNode = (struct node *)malloc(sizeof(struct node));
+
+            newNode->data = data;
+            newNode->next = temp->next; // Connect new node with n+1th node
+            newNode->prev = temp;          // Connect new node with n-1th node
+
+            if(temp->next != NULL)
+            {
+                /* Connect n+1th node with new node */
+                temp->next->prev = newNode;
+            }
+            /* Connect n-1th node with new node */
+            temp->next = newNode;
+
+            printf("sukses ditambahkan pada posisi %d \n", position);
+        }
+        else
+        {
+            printf("Error, Posisi salah\n");
+        }
+    }
+}
